@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import serial
+import requests
+import json
+
+if __name__=='__main__':
+    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    ser.reset_input_buffer()
+    
+    while True:
+        if ser.in_waiting > 0:
+            rawserial = ser.readline().decode('utf-8').rstrip()
+            datasplit = rawserial.split(',')
+            idtambak = datasplit[0]
+            peha = datasplit[1]
+            suhu = datasplit[2]
+            jenisikan = datasplit[3]
+            print(idtambak)
+            print('pH : ' + peha)
+            print('Temp: ' + suhu)
+            print('Jenis Ikan : ' + jenisikan)
+            myobj = {'idtambak': idtambak, 'peha': peha, 'suhu': suhu, 'jenisikan' : jenisikan}
+            url_api = "http://webhook.smartfishery.my.id"
+            x = requests.post(url_api, data = myobj)
+            data = x.text;
+            print(data)
